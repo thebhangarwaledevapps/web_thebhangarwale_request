@@ -25,7 +25,6 @@ public class Item {
     @Column(nullable = false)
     private double totalItemPriceForUserAsPerQuantity;
 
-    @JoinTable(name = "request_item_medias")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Media> medias;
 

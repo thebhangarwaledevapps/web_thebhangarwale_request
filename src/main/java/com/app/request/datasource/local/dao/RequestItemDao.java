@@ -2,7 +2,9 @@ package com.app.request.datasource.local.dao;
 
 import com.app.request.entity.RequestItem;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -12,7 +14,7 @@ import java.util.Optional;
 public interface RequestItemDao extends JpaRepository<RequestItem, Long> {
 
     @Query(value = "SELECT medias_media_id FROM \n" +
-            "request_item_medias LEFT JOIN request_item ON request_item_medias.item_item_id = request_item.item_item_id\n" +
+            "item_medias LEFT JOIN request_item ON item_medias.item_item_id = request_item.item_item_id\n" +
             "LEFT JOIN customer_request_items ON request_item.request_item_id = customer_request_items.request_items_request_item_id\n" +
             "WHERE customer_request_items.customer_customer_id = ?1", nativeQuery = true)
     List<String> findAllMediaIdsByCustomerId(String customer_customer_id);
@@ -22,8 +24,28 @@ public interface RequestItemDao extends JpaRepository<RequestItem, Long> {
             " where customer_request_items.customer_customer_id = ?1", nativeQuery = true)
     List<RequestItem> findAllByCustomerId(String customer_customer_id);
 
-    //@Transactional
-    //Integer deleteByCustomerIdAndRequestItemIdIn(String customerId, List<Long> ids);
+    @Query(value = "select ri.*,i.*,m.* from \n" +
+            "customer_request_items as cri left join request_item as ri\n" +
+            "on cri.request_items_request_item_id = ri.request_item_id\n" +
+            "left join item as i\n" +
+            "on ri.item_item_id = i.item_id\n" +
+            "left join request_item_medias as rim\n" +
+            "on i.item_id = rim.item_item_id\n" +
+            "left join media as m\n" +
+            "on rim.medias_media_id = m.media_id\n" +
+            "where cri.customer_customer_id = ?1 and cri.request_items_request_item_id = ?2", nativeQuery = true)
+    RequestItem findByCustomerIdAndRequestItemId(String customer_customer_id, long requestItemId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "delete rim_1, m_1 from\n" +
+            "request_item_medias as rim_1 left join media as m_1 on rim_1.medias_media_id = m_1.media_id\n" +
+            "right join request_item_medias as rim on m_1.media_id = rim.medias_media_id\n" +
+            "right join request_item as ri on rim.item_item_id = ri.item_item_id\n" +
+            "right join customer_request_items as cri on ri.request_item_id = cri.request_items_request_item_id\n" +
+            "right join customer as c on cri.customer_customer_id = c.customer_id\n" +
+            "where c.customer_id = ?1 and cri.request_items_request_item_id = ?2 and rim_1.medias_media_id in ?3", nativeQuery = true)
+    int deleteMediaByCustomerIdAndMediaId(String customer_id, long request_items_request_item_id,List<String> medias);
 
 
 }

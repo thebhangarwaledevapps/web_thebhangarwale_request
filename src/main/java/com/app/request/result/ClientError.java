@@ -2,15 +2,14 @@ package com.app.request.result;
 
 public final class ClientError extends Result {
 
-	final String errorMessage;
+	private final Exception exception;
 
-	public ClientError(String errorMessage) {
+	public ClientError(Exception exception) {
 		super();
-		this.errorMessage = errorMessage;
+		this.exception = exception;
 	}
 
-	public String getErrorMessage() {
-		return errorMessage;
+	public Exception getException() {
+		return exception;
 	}
-
 }

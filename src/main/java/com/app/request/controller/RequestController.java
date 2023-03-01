@@ -23,64 +23,61 @@ public class RequestController {
     private RequestService requestService;
 
     @GetMapping("/addRequestInBucket")
-    public ResponseEntity<Result> addRequestInBucket(
+    public ResponseEntity addRequestInBucket(
             @RequestParam long itemId,
             @RequestParam int itemQuantity,
             @RequestParam(name = "media", required = false) MultipartFile[] mediaList,
             @RequestParam String customerId
     ) {
-        final Result result = requestService.addRequestInBucket(itemId, itemQuantity, mediaList, customerId);
-        return getResultResponseEntity(result);
+        return getResultResponseEntity(requestService.addRequestInBucket(itemId, itemQuantity, mediaList, customerId));
     }
 
     @GetMapping("/getCustomersRequestInBucket")
-    public ResponseEntity<Result> getCustomersRequestInBucket(
+    public ResponseEntity getCustomersRequestInBucket(
             @RequestParam String customerId
     ) {
-        final Result result = requestService.getCustomersRequestInBucket(customerId);
-        return getResultResponseEntity(result);
+        return getResultResponseEntity(requestService.getCustomersRequestInBucket(customerId));
     }
 
     @GetMapping("/deleteCustomerRequestMedia")
-    public ResponseEntity<Result> deleteCustomerRequestMedia(
+    public ResponseEntity deleteCustomerRequestMedia(
             @RequestParam String customerId,
             @RequestParam long requestId,
             @RequestParam List<String> mediaIds
     ) {
-        final Result result = requestService.deleteMediaById(customerId, requestId, mediaIds);
-        return getResultResponseEntity(result);
+        return getResultResponseEntity(requestService.deleteMediaById(customerId, requestId, mediaIds));
     }
 
     @GetMapping("/updateCustomersRequestInBucket")
-    public ResponseEntity<Result> updateCustomersRequestInBucket(
+    public ResponseEntity updateCustomersRequestInBucket(
             @RequestParam long requestItemId,
             @RequestParam int itemQuantity,
             @RequestParam MultipartFile[] mediaList,
             @RequestParam String customerId
     ) {
-        final Result result = requestService.updateRequestInBucket(requestItemId, itemQuantity, mediaList, customerId);
-        return getResultResponseEntity(result);
+        return getResultResponseEntity(requestService.updateRequestInBucket(requestItemId, itemQuantity, mediaList, customerId));
     }
 
     @GetMapping("/deleteRequestsInBucket")
-    public ResponseEntity<Result> deleteRequestsInBucket(
+    public ResponseEntity deleteRequestsInBucket(
             @RequestParam String customerId,
             @RequestParam List<Long> requestIds
     ) {
-        final Result result = requestService.deleteRequestsInBucket(customerId, requestIds);
-        return getResultResponseEntity(result);
+        return getResultResponseEntity(requestService.deleteRequestsInBucket(customerId, requestIds));
     }
 
-    private ResponseEntity<Result> getResultResponseEntity(final Result result) {
+    private ResponseEntity getResultResponseEntity(final Result result) {
+        ResponseEntity responseEntity = null;
         if (result instanceof Success) {
             Success success = (Success) result;
-            return ResponseEntity.ok(success);
+            responseEntity = ResponseEntity.ok(success.getData());
         } else if (result instanceof ClientError) {
             ClientError clientError = (ClientError) result;
-            return ResponseEntity.badRequest().body(clientError);
+            responseEntity = ResponseEntity.badRequest().body(clientError.getException().getMessage());
         } else if (result instanceof ServerError) {
             ServerError serverError = (ServerError) result;
-            return ResponseEntity.internalServerError().body(serverError);
-        } else return null;
+            responseEntity = ResponseEntity.internalServerError().body(serverError.getException().getMessage());
+        }
+        return responseEntity;
     }
 }

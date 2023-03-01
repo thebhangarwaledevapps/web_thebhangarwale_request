@@ -1,10 +1,8 @@
 package com.app.request.exception;
 
-public class NoRequestFoundException extends Exception{
+public class NoRequestFoundException extends RuntimeException{
 
-    @Override
-    public String getMessage() {
-        return "No Request Found.";
+    public NoRequestFoundException(String message) {
+        super(message);
     }
-
 }

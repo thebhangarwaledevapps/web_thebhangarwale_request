@@ -1,10 +1,7 @@
 package com.app.request.exception;
 
-public class InvalidItemQuantityException extends Exception{
-
-	@Override
-	public String getMessage() {
-		return "Enter Valid Item Quantity.";
+public class InvalidItemQuantityException extends RuntimeException{
+	public InvalidItemQuantityException(String message) {
+		super(message);
 	}
-
 }

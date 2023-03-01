@@ -9,5 +9,7 @@ import java.util.List;
 public interface MediaUploadDataSource {
     List<MediaItem> uploadMedia(List<MultipartFile> multipartFiles);
 
-    Boolean isMediaDeletedByMediaId(List<String> mediaIds);
+    boolean deleteMediaByMediaId(List<String> mediaIds);
+
+    List<MediaItem> getCustomerMediaByMediaId(List<String> mediaIds);
 }

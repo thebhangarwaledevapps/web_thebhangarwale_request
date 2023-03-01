@@ -16,7 +16,12 @@ public class AWSMediaUploadDataSourceImpl implements MediaUploadDataSource {
     }
 
     @Override
-    public Boolean isMediaDeletedByMediaId(List<String> mediaIds) {
+    public boolean deleteMediaByMediaId(List<String> mediaIds) {
+        return false;
+    }
+
+    @Override
+    public List<MediaItem> getCustomerMediaByMediaId(List<String> mediaIds) {
         return null;
     }
 }

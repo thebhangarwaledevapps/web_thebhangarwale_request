@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +56,8 @@ public class GoogleMediaDataSourceImpl implements MediaUploadDataSource {
                         newMediaItem = NewMediaItemFactory
                                 .createNewMediaItem(uploadToken, multipartFile.getName(), multipartFile.getName());
                     }
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
                 return newMediaItem;
             }).collect(Collectors.toList());
             return getCustomerMediaByMediaId(
@@ -69,11 +71,12 @@ public class GoogleMediaDataSourceImpl implements MediaUploadDataSource {
                             .collect(Collectors.toList())
             );
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return null;
         }
     }
 
-    private PhotosLibraryClient getPhotosLibraryClient() throws IOException {
+    public PhotosLibraryClient getPhotosLibraryClient() throws IOException {
         final Details details = GoogleClientSecrets.load(
                 GsonFactory.getDefaultInstance(),
                 new InputStreamReader(new FileInputStream(getClass()
@@ -104,31 +107,32 @@ public class GoogleMediaDataSourceImpl implements MediaUploadDataSource {
                 .build());
     }
 
+    @Override
     public List<MediaItem> getCustomerMediaByMediaId(List<String> mediaIds) {
         try {
-            return getPhotosLibraryClient()
+            List<MediaItem> mediaItems = getPhotosLibraryClient()
                     .batchGetMediaItems(mediaIds)
                     .getMediaItemResultsList()
                     .stream()
                     .filter(newMediaItemResult -> newMediaItemResult.getStatus().getCode() == Code.OK_VALUE)
                     .map(newMediaItemResult -> newMediaItemResult.getMediaItem())
                     .collect(Collectors.toList());
+            return mediaItems == null || mediaItems.isEmpty() ? null : mediaItems;
         } catch (Exception e) {
             return null;
         }
     }
 
     @Override
-    public Boolean isMediaDeletedByMediaId(List<String> mediaIds) {
+    public boolean deleteMediaByMediaId(List<String> mediaIds) {
         try {
-            getPhotosLibraryClient()
+            return getPhotosLibraryClient()
                     .batchRemoveMediaItemsFromAlbum(
                             environment.getProperty("google.photo.album-id"),
                             mediaIds
-                    );
-            return true;
+                    ).toString().isEmpty();
         } catch (Exception e) {
-            return null;
+            return false;
         }
     }
 

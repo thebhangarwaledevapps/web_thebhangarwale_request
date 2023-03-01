@@ -12,6 +12,6 @@ public final class Success<T> extends Result<T> {
 	public T getData() {
 		return data;
 	}
-
-
+	
 }
+

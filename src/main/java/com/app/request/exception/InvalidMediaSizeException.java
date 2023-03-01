@@ -1,10 +1,8 @@
 package com.app.request.exception;
 
-public class InvalidMediaSizeException extends Exception{
+public class InvalidMediaSizeException extends RuntimeException{
 
-    @Override
-    public String getMessage() {
-        return "You can upload maximum 3 media";
+    public InvalidMediaSizeException(String message) {
+        super(message);
     }
-
 }
