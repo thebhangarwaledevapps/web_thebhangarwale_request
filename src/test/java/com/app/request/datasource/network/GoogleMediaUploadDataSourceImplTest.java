@@ -52,7 +52,6 @@ class GoogleMediaUploadDataSourceImplTest {
 
     @Test
     public void test_to_find_proper_image_url_from_google_photos(){
-
         List<MediaItem> mediaItems = googleImageUploadDataSource.getCustomerMediaByMediaId(Arrays.asList("AOqewoKuERW2pfuBoPvG4RUfQiAHZ99pV7cXtPHcCO65UeSegapq0IXr-uQSAYr-RawNiN1mSj5s3Pt_-KvIy4ucJUzvx0n4pQ"));
         Assertions.assertTrue(!mediaItems.isEmpty());
     }

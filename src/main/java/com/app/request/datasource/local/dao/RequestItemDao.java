@@ -38,13 +38,13 @@ public interface RequestItemDao extends JpaRepository<RequestItem, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "delete rim_1, m_1 from\n" +
-            "request_item_medias as rim_1 left join media as m_1 on rim_1.medias_media_id = m_1.media_id\n" +
-            "right join request_item_medias as rim on m_1.media_id = rim.medias_media_id\n" +
-            "right join request_item as ri on rim.item_item_id = ri.item_item_id\n" +
+    @Query(value = "delete im_1, m_1 from\n" +
+            "item_medias as im_1 left join media as m_1 on im_1.medias_media_id = m_1.media_id\n" +
+            "right join item_medias as im on m_1.media_id = im.medias_media_id\n" +
+            "right join request_item as ri on im.item_item_id = ri.item_item_id\n" +
             "right join customer_request_items as cri on ri.request_item_id = cri.request_items_request_item_id\n" +
             "right join customer as c on cri.customer_customer_id = c.customer_id\n" +
-            "where c.customer_id = ?1 and cri.request_items_request_item_id = ?2 and rim_1.medias_media_id in ?3", nativeQuery = true)
+            "where c.customer_id = ?1 and cri.request_items_request_item_id = ?2 and im_1.medias_media_id in ?3", nativeQuery = true)
     int deleteMediaByCustomerIdAndMediaId(String customer_id, long request_items_request_item_id,List<String> medias);
 
 

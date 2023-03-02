@@ -17,10 +17,10 @@ public interface MediaDao extends JpaRepository<Media, String> {
             "on cri.request_items_request_item_id = ri.request_item_id\n" +
             "left join item as i\n" +
             "on ri.item_item_id = i.item_id\n" +
-            "left join request_item_medias as rim\n" +
-            "on i.item_id = rim.item_item_id\n" +
+            "left join item_medias as im\n" +
+            "on i.item_id = im.item_item_id\n" +
             "left join media as m\n" +
-            "on rim.medias_media_id = m.media_id\n" +
+            "on im.medias_media_id = m.media_id\n" +
             "where cri.customer_customer_id = ?1 and cri.request_items_request_item_id = ?2", nativeQuery = true)
     List<Media> findByCustomerIdAndRequestItemId(String customer_customer_id, long requestItemId);
 

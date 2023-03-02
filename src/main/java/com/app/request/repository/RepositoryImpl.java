@@ -105,7 +105,7 @@ public class RepositoryImpl implements Repository {
         );
         return Optional.ofNullable(mediaList != null && !mediaList.isEmpty() ? mediaList : null)
                 .map(mediaList1 -> mediaList1.stream().map(Media::getMediaId).collect(Collectors.toList()))
-                .map(mediaIds1 -> mediaUploadDataSource.deleteMediaByMediaId(mediaIds1) ? true : null)
+                .map(mediaIds1 -> mediaUploadDataSource.deleteMediaByMediaId(mediaIds) ? true : null)
                 .map(isMediaDeleted -> {
                     final int rowEffected = databaseDataSourceImpl.deleteMediaByCustomerIdRequestIdAndMediaId(
                             customerId,
