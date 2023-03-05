@@ -3,8 +3,11 @@ package com.app.request.datasource.network;
 import com.app.request.datasource.network.google.GoogleMediaDataSourceImpl;
 import com.google.photos.library.v1.PhotosLibraryClient;
 import com.google.photos.library.v1.internal.InternalPhotosLibraryClient;
+import com.google.photos.library.v1.proto.UpdateMediaItemRequest;
+import com.google.photos.library.v1.upload.UploadMediaItemRequest;
 import com.google.photos.types.proto.Album;
 import com.google.photos.types.proto.MediaItem;
+import com.google.protobuf.FieldMask;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -76,9 +80,5 @@ class GoogleMediaUploadDataSourceImplTest {
             e.printStackTrace();
         }
     }
-
-
-
-
 
 }

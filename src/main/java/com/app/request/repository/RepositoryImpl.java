@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -122,26 +123,37 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public int getAvailableMediaListSizeForRequestItem(long requestItemId) {
-        /*final AtomicInteger size = new AtomicInteger(0);
-        requestItemDao
-                .findById(requestItemId)
-                .ifPresent(requestItem -> {
-                    size.set(requestItem.getItem().getMedias().size());
-                });
-        return size.get();*/
-        return 0;
+    public int getAvailableMediaListSizeForRequestItem(long requestItemId, String customerId) {
+        List mediaList = databaseDataSourceImpl.findMediaByCustomerIdAndRequestId(customerId,requestItemId);
+        return mediaList == null || mediaList.isEmpty() ? 0 : mediaList.size();
     }
 
     @Override
-    public RequestItem updateRequestInBucket(long requestItemId, int itemQuantity, String customerId) {
-        final int rowEffected = databaseDataSourceImpl.updateCustomerRequest(
-                itemQuantity,
-                customerId,
-                requestItemId
-        );
-        return Optional.ofNullable(rowEffected > 0 ? rowEffected : null)
-                .map(integer -> databaseDataSourceImpl.findByCustomerIdAndRequestItemId(customerId, requestItemId))
+    public RequestItem updateRequestInBucket(long requestItemId, int itemQuantity, MultipartFile[] mediaList, String customerId) {
+        return Optional.ofNullable(databaseDataSourceImpl.findByCustomerIdAndRequestItemId(customerId,requestItemId))
+                .map(requestItem -> {
+                    requestItem.getItem().setItemQuantity(itemQuantity);
+                    requestItem.getItem().setTotalItemPriceForUserAsPerQuantity(
+                            itemQuantity * requestItem.getItem().getItemPrice()
+                    );
+                    if(mediaList!=null){
+                        requestItem.getItem().getMedias().addAll(
+                                mediaUploadDataSource
+                                        .uploadMedia(Arrays.asList(mediaList))
+                                        .stream()
+                                        .map(mediaItem -> new Media(
+                                                mediaItem.getId(),
+                                                mediaItem.getBaseUrl(),
+                                                mediaItem.getMimeType()
+                                        )).collect(Collectors.toList())
+                        );
+                    }
+                    List<RequestItem> requestItems = databaseDataSourceImpl.findByCustomerId(customerId);
+                    requestItems.removeIf(requestItem1 -> requestItemId == requestItem1.getRequestItemId());
+                    requestItems.add(requestItem);
+                    databaseDataSourceImpl.saveCustomerRequest(customerId,requestItems);
+                    return databaseDataSourceImpl.findByCustomerIdAndRequestItemId(customerId,requestItemId);
+                })
                 .orElse(null);
     }
 

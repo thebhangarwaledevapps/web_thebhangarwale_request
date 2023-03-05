@@ -26,7 +26,7 @@ public class RequestController {
     public ResponseEntity addRequestInBucket(
             @RequestParam long itemId,
             @RequestParam int itemQuantity,
-            @RequestParam(name = "media", required = false) MultipartFile[] mediaList,
+            @RequestParam(name = "media") MultipartFile[] mediaList,
             @RequestParam String customerId
     ) {
         return getResultResponseEntity(requestService.addRequestInBucket(itemId, itemQuantity, mediaList, customerId));
@@ -51,8 +51,8 @@ public class RequestController {
     @GetMapping("/updateCustomersRequestInBucket")
     public ResponseEntity updateCustomersRequestInBucket(
             @RequestParam long requestItemId,
-            @RequestParam int itemQuantity,
-            @RequestParam MultipartFile[] mediaList,
+            @RequestParam(required = false) int itemQuantity,
+            @RequestParam(name = "media", required = false) MultipartFile[] mediaList,
             @RequestParam String customerId
     ) {
         return getResultResponseEntity(requestService.updateRequestInBucket(requestItemId, itemQuantity, mediaList, customerId));

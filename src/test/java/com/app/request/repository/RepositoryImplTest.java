@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,8 +67,34 @@ class RepositoryImplTest {
     void deleteMedia() {
         List<RequestItem> requestItems = repository.getCustomerRequests("user1");
         RequestItem requestItem = requestItems.get(0);
-        List<String> mediaIds = requestItem.getItem().getMedias().subList(1,2).stream().map(media -> media.getMediaId()).collect(Collectors.toList());
+        List<String> mediaIds = requestItem.getItem().getMedias().subList(0,1).stream().map(media -> media.getMediaId()).collect(Collectors.toList());
         List<Media> mediaList = repository.deleteMedia("user1",requestItem.getRequestItemId(),mediaIds);
         Assertions.assertEquals(2,mediaList.size());
     }
+
+    @Test
+    void updateRequest() throws Exception {
+
+        ClassLoader classLoader = getClass().getClassLoader();
+
+        String resourceName2 = "mahatma_gandhi.jpeg";
+        File file2 = new File(classLoader.getResource(resourceName2).getFile());
+        MultipartFile multipartFile2 = new MockMultipartFile(resourceName2, resourceName2, "image/jpeg", new FileInputStream(file2));
+
+
+        RequestItem requestItem = repository.updateRequestInBucket(
+                2,
+                25,
+                (MultipartFile[]) Arrays.asList(multipartFile2).toArray(),
+                "user1"
+        );
+
+        Assertions.assertNotNull(requestItem);
+        Assertions.assertEquals(requestItem.getItem().getTotalItemPriceForUserAsPerQuantity(),832.5);
+
+        //repository.updateRequestInBucket()
+
+    }
+
+
 }
